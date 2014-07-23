@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module Play
     ( playOnCoil
     , performOnCoil
@@ -86,7 +88,11 @@ playMidiOnSynth midi = do
         [] -> putStrLn "*** No IAC Driver output found"
   where
     findIacOutput = filter (namedIAC . snd) .  filter (output . snd)
+#ifdef linux_HOST_OS
+    namedIAC = ("Midi Through Port-" `isPrefixOf`) . name
+#else
     namedIAC = ("IAC Driver" `isPrefixOf`) . name
+#endif
 
 
 restrictCoil :: Midi -> (Coil.Messages, Midi)
